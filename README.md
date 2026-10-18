@@ -76,7 +76,7 @@ export class UsersPage {
   (actionTriggered)="handleAction($event)"
   (selectionChange)="selectedUsers.set($event)"
 >
-  <ng-template [cdtCell]="nameCell" let-user>
+  <ng-template [cdtCell]="nameCell" let-user="$implicit">
     <strong>{{ user.name }}</strong>
   </ng-template>
 </cdt-table>

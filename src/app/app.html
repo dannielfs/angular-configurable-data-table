@@ -1,23 +1,31 @@
 <header class="hero">
-  <nav aria-label="Main navigation" class="nav">
-    <a class="brand" href="#top" aria-label="Configurable Data Table home">
-      <span class="brand__mark" aria-hidden="true">CDT</span>
+  <nav aria-label="Main navigation"
+       class="nav">
+    <a aria-label="Configurable Data Table home"
+       class="brand"
+       href="#top">
+      <span aria-hidden="true"
+            class="brand__mark">CDT</span>
       <span>Configurable Data Table</span>
     </a>
-    <a class="nav__link" href="#demo">Live demo</a>
+    <a class="nav__link"
+       href="#demo">Live demo</a>
   </nav>
 
-  <div class="hero__content" id="top">
+  <div class="hero__content"
+       id="top">
     <span class="eyebrow">Angular 22 · Angular Material · Strictly typed</span>
-    <h1>One table.<br />Your data contract.</h1>
+    <h1>One table.<br/>Your data contract.</h1>
     <p>
       A reusable Angular data table with typed columns, custom cell templates, server-driven
       queries, configurable actions, and a responsive layout.
     </p>
-    <a class="hero__action" href="#demo">Explore the component</a>
+    <a class="hero__action"
+       href="#demo">Explore the component</a>
   </div>
 
-  <ul class="feature-list" aria-label="Library features">
+  <ul aria-label="Library features"
+      class="feature-list">
     <li>Generic API</li>
     <li>Server-side ready</li>
     <li>Accessible</li>
@@ -27,7 +35,8 @@
 </header>
 
 <main>
-  <section class="intro" aria-labelledby="intro-title">
+  <section aria-labelledby="intro-title"
+           class="intro">
     <div>
       <span class="eyebrow">Configuration over repetition</span>
       <h2 id="intro-title">Describe the columns. Keep control of the data.</h2>
@@ -38,7 +47,9 @@
     </p>
   </section>
 
-  <section class="demo" id="demo" aria-labelledby="demo-title">
+  <section aria-labelledby="demo-title"
+           class="demo"
+           id="demo">
     <div class="demo__heading">
       <div>
         <span class="eyebrow">Interactive example</span>
@@ -47,29 +58,29 @@
       <span class="demo__mode"><i></i> Server-side simulation</span>
     </div>
 
-    <cdt-table
-      ariaLabel="Developer directory"
-      title="Engineering talent"
-      addLabel="Add developer"
-      [actions]="actions"
-      [columns]="columns"
-      [data]="visibleRows()"
-      [filter]="query().filter"
-      [pageIndex]="query().pageIndex"
-      [pageSize]="query().pageSize"
-      [rowKey]="developerRowKey"
-      [sort]="query().sort"
-      [totalRecords]="totalRecords()"
-      [showAddButton]="true"
-      selectionMode="multiple"
-      (actionTriggered)="handleAction($event)"
-      (add)="handleAdd()"
-      (queryChange)="handleQuery($event)"
-      (selectionChange)="handleSelection($event)"
-    >
-      <ng-template [cdtCell]="developerNameCell" let-developer>
+    <cdt-table (actionTriggered)="handleAction($event)"
+               (add)="handleAdd()"
+               (queryChange)="handleQuery($event)"
+               (selectionChange)="handleSelection($event)"
+               [actions]="actions"
+               [columns]="columns"
+               [data]="visibleRows()"
+               [filter]="query().filter"
+               [pageIndex]="query().pageIndex"
+               [pageSize]="query().pageSize"
+               [rowKey]="developerRowKey"
+               [showAddButton]="true"
+               [sort]="query().sort"
+               [totalRecords]="totalRecords()"
+               addLabel="Add developer"
+               ariaLabel="Developer directory"
+               selectionMode="multiple"
+               title="Engineering talent">
+      <ng-template [cdtCell]="developerNameCell"
+                   let-developer="$implicit">
         <div class="developer-cell">
-          <span class="developer-cell__avatar" aria-hidden="true">
+          <span aria-hidden="true"
+                class="developer-cell__avatar">
             {{ initials(developer.name) }}
           </span>
           <span>
@@ -80,13 +91,15 @@
       </ng-template>
     </cdt-table>
 
-    <output class="event-log" aria-live="polite">
+    <output aria-live="polite"
+            class="event-log">
       <span>Latest event</span>
       <code>{{ lastEvent() }}</code>
     </output>
   </section>
 
-  <section class="api-preview" aria-labelledby="api-title">
+  <section aria-labelledby="api-title"
+           class="api-preview">
     <div>
       <span class="eyebrow">Small public API</span>
       <h2 id="api-title">Typed from configuration to event.</h2>
@@ -102,9 +115,7 @@
   (queryChange)="load($event)"
   (actionTriggered)="handle($event)"
 &gt;
-  &lt;ng-template [cdtCell]="nameCell" let-row&gt;
-    {{ '{{ row.name }}' }}
-  &lt;/ng-template&gt;
+  &lt;ng-template [cdtCell]="nameCell" let-row&gt; {{ '{{ row.name }}' }} &lt;/ng-template&gt;
 &lt;/cdt-table&gt;</code></pre>
   </section>
 </main>

@@ -1,4 +1,6 @@
-<section class="cdt" [attr.aria-busy]="loading()" [attr.aria-label]="ariaLabel()">
+<section [attr.aria-busy]="loading()"
+         [attr.aria-label]="ariaLabel()"
+         class="cdt">
   <div class="cdt__toolbar">
     <div class="cdt__heading">
       @if (title()) {
@@ -9,25 +11,24 @@
 
     <div class="cdt__toolbar-actions">
       @if (filterable()) {
-        <mat-form-field appearance="outline" class="cdt__filter" subscriptSizing="dynamic">
+        <mat-form-field appearance="outline"
+                        class="cdt__filter"
+                        subscriptSizing="dynamic">
           <mat-label>{{ resolvedMessages().filterLabel }}</mat-label>
-          <mat-icon matPrefix aria-hidden="true">search</mat-icon>
-          <input
-            matInput
-            type="search"
-            [attr.aria-label]="resolvedMessages().filterLabel"
-            [placeholder]="resolvedMessages().filterPlaceholder"
-            [value]="filterValue()"
-            (input)="handleFilter($event)"
-          />
+          <mat-icon aria-hidden="true"
+                    matPrefix>search</mat-icon>
+          <input (input)="handleFilter($event)"
+                 [attr.aria-label]="resolvedMessages().filterLabel"
+                 [placeholder]="resolvedMessages().filterPlaceholder"
+                 [value]="filterValue()"
+                 matInput
+                 type="search"/>
           @if (filterValue()) {
-            <button
-              matIconButton
-              matSuffix
-              type="button"
-              [attr.aria-label]="resolvedMessages().clearFilterLabel"
-              (click)="clearFilter()"
-            >
+            <button (click)="clearFilter()"
+                    [attr.aria-label]="resolvedMessages().clearFilterLabel"
+                    matIconButton
+                    matSuffix
+                    type="button">
               <mat-icon aria-hidden="true">close</mat-icon>
             </button>
           }
@@ -35,7 +36,9 @@
       }
 
       @if (showAddButton()) {
-        <button matButton="filled" type="button" (click)="add.emit()">
+        <button (click)="add.emit()"
+                matButton="filled"
+                type="button">
           <mat-icon aria-hidden="true">{{ addIcon() }}</mat-icon>
           {{ addLabel() }}
         </button>
@@ -45,66 +48,58 @@
 
   <div class="cdt__surface">
     <div class="cdt__scroll-area">
-      <table
-        mat-table
-        matSort
-        [attr.aria-label]="ariaLabel()"
-        [dataSource]="data()"
-        [trackBy]="trackRows"
-        [matSortActive]="sort()?.active ?? ''"
-        [matSortDirection]="sort()?.direction ?? ''"
-        (matSortChange)="handleSort($event)"
-      >
+      <table (matSortChange)="handleSort($event)"
+             [attr.aria-label]="ariaLabel()"
+             [dataSource]="data()"
+             [matSortActive]="sort()?.active ?? ''"
+             [matSortDirection]="sort()?.direction ?? ''"
+             [trackBy]="trackRows"
+             mat-table
+             matSort>
         @if (selectionMode() !== 'none') {
           <ng-container matColumnDef="__select">
-            <th mat-header-cell *matHeaderCellDef class="cdt-selection-cell">
+            <th *matHeaderCellDef
+                class="cdt-selection-cell"
+                mat-header-cell>
               @if (selectionMode() === 'multiple') {
-                <mat-checkbox
-                  [attr.aria-label]="resolvedMessages().selectAllLabel"
-                  [checked]="allVisibleRowsSelected()"
-                  [indeterminate]="someVisibleRowsSelected()"
-                  (change)="toggleAllVisibleRows()"
-                />
+                <mat-checkbox (change)="toggleAllVisibleRows()"
+                              [attr.aria-label]="resolvedMessages().selectAllLabel"
+                              [checked]="allVisibleRowsSelected()"
+                              [indeterminate]="someVisibleRowsSelected()"/>
               }
             </th>
-            <td mat-cell *matCellDef="let row" class="cdt-selection-cell">
-              <mat-checkbox
-                [attr.aria-label]="rowSelectionLabel(row)"
-                [checked]="isSelected(row)"
-                (change)="toggleRow(row)"
-              />
+            <td *matCellDef="let row"
+                class="cdt-selection-cell"
+                mat-cell>
+              <mat-checkbox (change)="toggleRow(row)"
+                            [attr.aria-label]="rowSelectionLabel(row)"
+                            [checked]="isSelected(row)"/>
             </td>
           </ng-container>
         }
 
         @for (column of columns(); track column.field) {
           <ng-container [matColumnDef]="column.field">
-            <th
-              mat-header-cell
-              *matHeaderCellDef
-              mat-sort-header
-              [disabled]="!column.sortable"
-              [style.width]="column.width ?? null"
-              [class.cdt-cell--center]="column.align === 'center'"
-              [class.cdt-cell--end]="column.align === 'end'"
-              [class.cdt-cell--mobile-hidden]="column.hideOnMobile"
-            >
+            <th *matHeaderCellDef
+                [class.cdt-cell--center]="column.align === 'center'"
+                [class.cdt-cell--end]="column.align === 'end'"
+                [class.cdt-cell--mobile-hidden]="column.hideOnMobile"
+                [disabled]="!column.sortable"
+                [style.width]="column.width ?? null"
+                mat-header-cell
+                mat-sort-header>
               {{ column.header }}
             </th>
 
-            <td
-              mat-cell
-              *matCellDef="let row"
-              [attr.data-label]="column.header"
-              [class.cdt-cell--center]="column.align === 'center'"
-              [class.cdt-cell--end]="column.align === 'end'"
-              [class.cdt-cell--mobile-hidden]="column.hideOnMobile"
-            >
+            <td *matCellDef="let row"
+                [attr.data-label]="column.header"
+                [class.cdt-cell--center]="column.align === 'center'"
+                [class.cdt-cell--end]="column.align === 'end'"
+                [class.cdt-cell--mobile-hidden]="column.hideOnMobile"
+                mat-cell>
               @if (templateFor(column); as cellTemplate) {
-                <ng-container
-                  [ngTemplateOutlet]="cellTemplate"
-                  [ngTemplateOutletContext]="templateContext(row, column)"
-                />
+                <ng-container [ngTemplateOutletContext]="templateContext(row, column)"
+                              [ngTemplateOutlet]="cellTemplate"/>
               } @else {
                 @switch (column.type) {
                   @case ('date') {
@@ -122,7 +117,7 @@
                       {{
                         currencyValueFor(row, column)
                           | currency
-                            : column.currencyCode ?? 'USD'
+                          : column.currencyCode ?? 'USD'
                             : column.currencyDisplay ?? 'symbol'
                             : column.digitsInfo
                             : locale()
@@ -132,7 +127,8 @@
                     }
                   }
                   @case ('boolean') {
-                    <span class="cdt-boolean" [class.cdt-boolean--true]="valueFor(row, column)">
+                    <span [class.cdt-boolean--true]="valueFor(row, column)"
+                          class="cdt-boolean">
                       <mat-icon aria-hidden="true">
                         {{ valueFor(row, column) ? 'check_circle' : 'cancel' }}
                       </mat-icon>
@@ -141,13 +137,11 @@
                   }
                   @case ('badge') {
                     @let badge = badgeFor(row, column);
-                    <span
-                      class="cdt-badge"
-                      [class.cdt-badge--info]="badge.tone === 'info'"
-                      [class.cdt-badge--success]="badge.tone === 'success'"
-                      [class.cdt-badge--warning]="badge.tone === 'warning'"
-                      [class.cdt-badge--danger]="badge.tone === 'danger'"
-                    >
+                    <span [class.cdt-badge--danger]="badge.tone === 'danger'"
+                          [class.cdt-badge--info]="badge.tone === 'info'"
+                          [class.cdt-badge--success]="badge.tone === 'success'"
+                          [class.cdt-badge--warning]="badge.tone === 'warning'"
+                          class="cdt-badge">
                       {{ badge.label }}
                     </span>
                   }
@@ -162,39 +156,35 @@
 
         @if (actions().length > 0) {
           <ng-container matColumnDef="__actions">
-            <th mat-header-cell *matHeaderCellDef class="cdt-actions-cell">
+            <th *matHeaderCellDef
+                class="cdt-actions-cell"
+                mat-header-cell>
               <span class="cdt-visually-hidden">{{ resolvedMessages().actionsHeader }}</span>
             </th>
-            <td
-              mat-cell
-              *matCellDef="let row"
-              class="cdt-actions-cell"
-              [attr.data-label]="resolvedMessages().actionsHeader"
-            >
+            <td *matCellDef="let row"
+                [attr.data-label]="resolvedMessages().actionsHeader"
+                class="cdt-actions-cell"
+                mat-cell>
               <div class="cdt-actions">
                 @for (action of visibleActions(row); track action.id) {
                   @if (action.icon) {
-                    <button
-                      matIconButton
-                      type="button"
-                      [attr.aria-label]="action.label"
-                      [disabled]="isActionDisabled(action, row)"
-                      [matTooltip]="action.label"
-                      [class.cdt-action--primary]="action.tone === 'primary'"
-                      [class.cdt-action--danger]="action.tone === 'danger'"
-                      (click)="triggerAction(action, row)"
-                    >
+                    <button (click)="triggerAction(action, row)"
+                            [attr.aria-label]="action.label"
+                            [class.cdt-action--danger]="action.tone === 'danger'"
+                            [class.cdt-action--primary]="action.tone === 'primary'"
+                            [disabled]="isActionDisabled(action, row)"
+                            [matTooltip]="action.label"
+                            matIconButton
+                            type="button">
                       <mat-icon aria-hidden="true">{{ action.icon }}</mat-icon>
                     </button>
                   } @else {
-                    <button
-                      matButton
-                      type="button"
-                      [disabled]="isActionDisabled(action, row)"
-                      [class.cdt-action--primary]="action.tone === 'primary'"
-                      [class.cdt-action--danger]="action.tone === 'danger'"
-                      (click)="triggerAction(action, row)"
-                    >
+                    <button (click)="triggerAction(action, row)"
+                            [class.cdt-action--danger]="action.tone === 'danger'"
+                            [class.cdt-action--primary]="action.tone === 'primary'"
+                            [disabled]="isActionDisabled(action, row)"
+                            matButton
+                            type="button">
                       {{ action.label }}
                     </button>
                   }
@@ -204,27 +194,34 @@
           </ng-container>
         }
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
+        <tr *matHeaderRowDef="displayedColumns(); sticky: true"
+            mat-header-row></tr>
+        <tr *matRowDef="let _row; columns: displayedColumns()"
+            mat-row></tr>
       </table>
     </div>
 
     @if (loading()) {
-      <div class="cdt-state cdt-state--overlay" role="status">
-        <mat-spinner diameter="32" />
+      <div class="cdt-state cdt-state--overlay"
+           role="status">
+        <mat-spinner diameter="32"/>
         <span>{{ resolvedMessages().loadingLabel }}</span>
       </div>
     } @else if (error()) {
-      <div class="cdt-state" role="alert">
+      <div class="cdt-state"
+           role="alert">
         <mat-icon aria-hidden="true">cloud_off</mat-icon>
         <strong>{{ resolvedMessages().errorTitle }}</strong>
         <span>{{ error() }}</span>
-        <button matButton="outlined" type="button" (click)="retry.emit()">
+        <button (click)="retry.emit()"
+                matButton="outlined"
+                type="button">
           {{ resolvedMessages().retryLabel }}
         </button>
       </div>
     } @else if (isEmpty()) {
-      <div class="cdt-state" role="status">
+      <div class="cdt-state"
+           role="status">
         <mat-icon aria-hidden="true">inbox</mat-icon>
         <strong>{{ resolvedMessages().emptyTitle }}</strong>
         <span>{{ resolvedMessages().emptyDescription }}</span>
@@ -232,14 +229,12 @@
     }
 
     @if (showPaginator()) {
-      <mat-paginator
-        [length]="effectiveTotal()"
-        [pageIndex]="pageIndex()"
-        [pageSize]="pageSize()"
-        [pageSizeOptions]="pageSizeOptions()"
-        [showFirstLastButtons]="showFirstLastButtons()"
-        (page)="handlePage($event)"
-      />
+      <mat-paginator (page)="handlePage($event)"
+                     [length]="effectiveTotal()"
+                     [pageIndex]="pageIndex()"
+                     [pageSizeOptions]="pageSizeOptions()"
+                     [pageSize]="pageSize()"
+                     [showFirstLastButtons]="showFirstLastButtons()"/>
     }
   </div>
 </section>

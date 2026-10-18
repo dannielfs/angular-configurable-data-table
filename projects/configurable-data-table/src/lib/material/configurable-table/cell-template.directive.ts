@@ -19,7 +19,7 @@ export interface TableCellContext<T extends object> {
 @Directive({
   selector: 'ng-template[cdtCell]',
 })
-export class CellTemplateDirective<T extends object = Record<string, unknown>> {
+export class CellTemplateDirective<T extends object> {
   readonly definition = input.required<string | TableCellDefinition<T>>({ alias: 'cdtCell' });
   readonly columnKey = computed(() => {
     const definition = this.definition();

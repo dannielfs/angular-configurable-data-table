@@ -47,7 +47,7 @@ import { CellTemplateDirective, TableCellContext } from './cell-template.directi
   templateUrl: './configurable-table.html',
   styleUrl: './configurable-table.scss',
 })
-export class ConfigurableTable<T extends object = Record<string, unknown>> implements OnDestroy {
+export class ConfigurableTable<T extends object> implements OnDestroy {
   readonly data = input.required<readonly T[]>();
   readonly columns = input.required<readonly TableColumn<T>[]>();
   readonly actions = input<readonly TableAction<T>[]>([]);
@@ -205,16 +205,16 @@ export class ConfigurableTable<T extends object = Record<string, unknown>> imple
     return column.valueAccessor ? column.valueAccessor(row) : getNestedValue(row, column.field);
   }
 
-  protected dateValueFor(row: T, column: TableColumn<T>): string | number | Date | null {
+  protected dateValueFor(row: T, column: TableColumn<T>): string | number | Date {
     const value = this.valueFor(row, column);
     return typeof value === 'string' || typeof value === 'number' || value instanceof Date
       ? value
-      : null;
+      : '';
   }
 
-  protected currencyValueFor(row: T, column: TableColumn<T>): string | number | null {
+  protected currencyValueFor(row: T, column: TableColumn<T>): string | number {
     const value = this.valueFor(row, column);
-    return typeof value === 'string' || typeof value === 'number' ? value : null;
+    return typeof value === 'string' || typeof value === 'number' ? value : 0;
   }
 
   protected hasValue(row: T, column: TableColumn<T>): boolean {
