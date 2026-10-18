@@ -1,1 +1,40 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+html {
+  min-width: 20rem;
+  min-height: 100%;
+  scroll-behavior: smooth;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$green-palette,
+        tertiary: mat.$orange-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  color-scheme: light;
+  color: var(--mat-sys-on-surface);
+  background: var(--mat-sys-surface);
+  font: var(--mat-sys-body-medium);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--mat-sys-primary);
+  outline-offset: 3px;
+}

@@ -29,22 +29,20 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ]
+            "styles": ["src/styles.scss"]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
+                  "maximumWarning": "800kB",
                   "maximumError": "1MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "10kB",
+                  "maximumError": "14kB"
                 }
               ],
               "outputHashing": "all"
@@ -71,6 +69,32 @@
         },
         "test": {
           "builder": "@angular/build:unit-test"
+        }
+      }
+    },
+    "configurable-data-table": {
+      "projectType": "library",
+      "root": "projects/configurable-data-table",
+      "sourceRoot": "projects/configurable-data-table/src",
+      "prefix": "cdt",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/configurable-data-table/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/configurable-data-table/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/configurable-data-table/tsconfig.spec.json"
+          }
         }
       }
     }

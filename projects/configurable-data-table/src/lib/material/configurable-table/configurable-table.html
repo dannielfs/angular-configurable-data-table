@@ -1,0 +1,245 @@
+<section class="cdt" [attr.aria-busy]="loading()" [attr.aria-label]="ariaLabel()">
+  <div class="cdt__toolbar">
+    <div class="cdt__heading">
+      @if (title()) {
+        <h2>{{ title() }}</h2>
+      }
+      <span class="cdt__count">{{ recordCountLabel() }}</span>
+    </div>
+
+    <div class="cdt__toolbar-actions">
+      @if (filterable()) {
+        <mat-form-field appearance="outline" class="cdt__filter" subscriptSizing="dynamic">
+          <mat-label>{{ resolvedMessages().filterLabel }}</mat-label>
+          <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+          <input
+            matInput
+            type="search"
+            [attr.aria-label]="resolvedMessages().filterLabel"
+            [placeholder]="resolvedMessages().filterPlaceholder"
+            [value]="filterValue()"
+            (input)="handleFilter($event)"
+          />
+          @if (filterValue()) {
+            <button
+              matIconButton
+              matSuffix
+              type="button"
+              [attr.aria-label]="resolvedMessages().clearFilterLabel"
+              (click)="clearFilter()"
+            >
+              <mat-icon aria-hidden="true">close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+      }
+
+      @if (showAddButton()) {
+        <button matButton="filled" type="button" (click)="add.emit()">
+          <mat-icon aria-hidden="true">{{ addIcon() }}</mat-icon>
+          {{ addLabel() }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="cdt__surface">
+    <div class="cdt__scroll-area">
+      <table
+        mat-table
+        matSort
+        [attr.aria-label]="ariaLabel()"
+        [dataSource]="data()"
+        [trackBy]="trackRows"
+        [matSortActive]="sort()?.active ?? ''"
+        [matSortDirection]="sort()?.direction ?? ''"
+        (matSortChange)="handleSort($event)"
+      >
+        @if (selectionMode() !== 'none') {
+          <ng-container matColumnDef="__select">
+            <th mat-header-cell *matHeaderCellDef class="cdt-selection-cell">
+              @if (selectionMode() === 'multiple') {
+                <mat-checkbox
+                  [attr.aria-label]="resolvedMessages().selectAllLabel"
+                  [checked]="allVisibleRowsSelected()"
+                  [indeterminate]="someVisibleRowsSelected()"
+                  (change)="toggleAllVisibleRows()"
+                />
+              }
+            </th>
+            <td mat-cell *matCellDef="let row" class="cdt-selection-cell">
+              <mat-checkbox
+                [attr.aria-label]="rowSelectionLabel(row)"
+                [checked]="isSelected(row)"
+                (change)="toggleRow(row)"
+              />
+            </td>
+          </ng-container>
+        }
+
+        @for (column of columns(); track column.field) {
+          <ng-container [matColumnDef]="column.field">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              [disabled]="!column.sortable"
+              [style.width]="column.width ?? null"
+              [class.cdt-cell--center]="column.align === 'center'"
+              [class.cdt-cell--end]="column.align === 'end'"
+              [class.cdt-cell--mobile-hidden]="column.hideOnMobile"
+            >
+              {{ column.header }}
+            </th>
+
+            <td
+              mat-cell
+              *matCellDef="let row"
+              [attr.data-label]="column.header"
+              [class.cdt-cell--center]="column.align === 'center'"
+              [class.cdt-cell--end]="column.align === 'end'"
+              [class.cdt-cell--mobile-hidden]="column.hideOnMobile"
+            >
+              @if (templateFor(column); as cellTemplate) {
+                <ng-container
+                  [ngTemplateOutlet]="cellTemplate"
+                  [ngTemplateOutletContext]="templateContext(row, column)"
+                />
+              } @else {
+                @switch (column.type) {
+                  @case ('date') {
+                    @if (hasValue(row, column)) {
+                      {{
+                        dateValueFor(row, column)
+                          | date: column.dateFormat ?? 'mediumDate' : undefined : locale()
+                      }}
+                    } @else {
+                      {{ emptyValueFor(column) }}
+                    }
+                  }
+                  @case ('currency') {
+                    @if (hasValue(row, column)) {
+                      {{
+                        currencyValueFor(row, column)
+                          | currency
+                            : column.currencyCode ?? 'USD'
+                            : column.currencyDisplay ?? 'symbol'
+                            : column.digitsInfo
+                            : locale()
+                      }}
+                    } @else {
+                      {{ emptyValueFor(column) }}
+                    }
+                  }
+                  @case ('boolean') {
+                    <span class="cdt-boolean" [class.cdt-boolean--true]="valueFor(row, column)">
+                      <mat-icon aria-hidden="true">
+                        {{ valueFor(row, column) ? 'check_circle' : 'cancel' }}
+                      </mat-icon>
+                      {{ booleanLabel(row, column) }}
+                    </span>
+                  }
+                  @case ('badge') {
+                    @let badge = badgeFor(row, column);
+                    <span
+                      class="cdt-badge"
+                      [class.cdt-badge--info]="badge.tone === 'info'"
+                      [class.cdt-badge--success]="badge.tone === 'success'"
+                      [class.cdt-badge--warning]="badge.tone === 'warning'"
+                      [class.cdt-badge--danger]="badge.tone === 'danger'"
+                    >
+                      {{ badge.label }}
+                    </span>
+                  }
+                  @default {
+                    {{ textFor(row, column) }}
+                  }
+                }
+              }
+            </td>
+          </ng-container>
+        }
+
+        @if (actions().length > 0) {
+          <ng-container matColumnDef="__actions">
+            <th mat-header-cell *matHeaderCellDef class="cdt-actions-cell">
+              <span class="cdt-visually-hidden">{{ resolvedMessages().actionsHeader }}</span>
+            </th>
+            <td
+              mat-cell
+              *matCellDef="let row"
+              class="cdt-actions-cell"
+              [attr.data-label]="resolvedMessages().actionsHeader"
+            >
+              <div class="cdt-actions">
+                @for (action of visibleActions(row); track action.id) {
+                  @if (action.icon) {
+                    <button
+                      matIconButton
+                      type="button"
+                      [attr.aria-label]="action.label"
+                      [disabled]="isActionDisabled(action, row)"
+                      [matTooltip]="action.label"
+                      [class.cdt-action--primary]="action.tone === 'primary'"
+                      [class.cdt-action--danger]="action.tone === 'danger'"
+                      (click)="triggerAction(action, row)"
+                    >
+                      <mat-icon aria-hidden="true">{{ action.icon }}</mat-icon>
+                    </button>
+                  } @else {
+                    <button
+                      matButton
+                      type="button"
+                      [disabled]="isActionDisabled(action, row)"
+                      [class.cdt-action--primary]="action.tone === 'primary'"
+                      [class.cdt-action--danger]="action.tone === 'danger'"
+                      (click)="triggerAction(action, row)"
+                    >
+                      {{ action.label }}
+                    </button>
+                  }
+                }
+              </div>
+            </td>
+          </ng-container>
+        }
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
+      </table>
+    </div>
+
+    @if (loading()) {
+      <div class="cdt-state cdt-state--overlay" role="status">
+        <mat-spinner diameter="32" />
+        <span>{{ resolvedMessages().loadingLabel }}</span>
+      </div>
+    } @else if (error()) {
+      <div class="cdt-state" role="alert">
+        <mat-icon aria-hidden="true">cloud_off</mat-icon>
+        <strong>{{ resolvedMessages().errorTitle }}</strong>
+        <span>{{ error() }}</span>
+        <button matButton="outlined" type="button" (click)="retry.emit()">
+          {{ resolvedMessages().retryLabel }}
+        </button>
+      </div>
+    } @else if (isEmpty()) {
+      <div class="cdt-state" role="status">
+        <mat-icon aria-hidden="true">inbox</mat-icon>
+        <strong>{{ resolvedMessages().emptyTitle }}</strong>
+        <span>{{ resolvedMessages().emptyDescription }}</span>
+      </div>
+    }
+
+    @if (showPaginator()) {
+      <mat-paginator
+        [length]="effectiveTotal()"
+        [pageIndex]="pageIndex()"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="pageSizeOptions()"
+        [showFirstLastButtons]="showFirstLastButtons()"
+        (page)="handlePage($event)"
+      />
+    }
+  </div>
+</section>

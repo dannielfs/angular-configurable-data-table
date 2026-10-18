@@ -1,59 +1,131 @@
-# AngularConfigurableDataTable
+# Angular Configurable Data Table
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.2.
+A reusable and strongly typed Angular data table built with Angular Material. It turns typed column definitions into an accessible, responsive table while keeping filtering, sorting, pagination, and data fetching under application control.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- Strongly typed columns and row actions
+- Direct and nested fields such as `company.name`
+- Text, number, date, currency, boolean, and badge renderers
+- Custom cell templates through `cdtCell`
+- Server-side filtering, sorting, and pagination contract
+- Configurable and conditional row actions
+- Single and multiple row selection
+- Loading, empty, and error states
+- Responsive mobile card layout
+- Customizable labels and locale
+- Angular Signals and zoneless demo application
+- Vitest test suite
 
-```bash
-ng serve
+## Workspace structure
+
+```text
+projects/configurable-data-table/  # publishable library
+src/app/                           # interactive demo application
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+The `core` directory contains framework-light contracts and utilities. The `material` directory contains the Angular Material renderer.
 
-## Code scaffolding
+## Quick start
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+```ts
+import { TableAction, TableColumn, TableQuery } from 'configurable-data-table';
 
-```bash
-ng generate component component-name
+interface User {
+  readonly id: number;
+  readonly name: string;
+  readonly company: { readonly name: string };
+  readonly active: boolean;
+}
+
+const columns = [
+  { field: 'name', header: 'Name', sortable: true },
+  { field: 'company.name', header: 'Company' },
+  { field: 'active', header: 'Active', type: 'boolean' },
+] as const satisfies readonly TableColumn<User>[];
+
+const actions = [
+  { id: 'edit', label: 'Edit user', icon: 'edit' },
+] as const satisfies readonly TableAction<User>[];
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Import the component and optional custom-cell directive:
 
-```bash
-ng generate --help
+```ts
+import { CellTemplateDirective, ConfigurableTable, defineTableCell } from 'configurable-data-table';
+
+@Component({
+  imports: [CellTemplateDirective, ConfigurableTable],
+  templateUrl: './users.html',
+})
+export class UsersPage {
+  readonly nameCell = defineTableCell<User>('name');
+  readonly userRowKey = (user: User) => user.id;
+}
 ```
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
+```html
+<cdt-table
+  [data]="users()"
+  [columns]="columns"
+  [actions]="actions"
+  [totalRecords]="totalRecords()"
+  [rowKey]="userRowKey"
+  selectionMode="multiple"
+  (queryChange)="loadUsers($event)"
+  (actionTriggered)="handleAction($event)"
+  (selectionChange)="selectedUsers.set($event)"
+>
+  <ng-template [cdtCell]="nameCell" let-user>
+    <strong>{{ user.name }}</strong>
+  </ng-template>
+</cdt-table>
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+`queryChange` emits a stable server-side contract:
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
+```ts
+interface TableQuery {
+  pageIndex: number;
+  pageSize: number;
+  filter: string;
+  sort: { active: string; direction: 'asc' | 'desc' } | null;
+}
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+## Development
 
 ```bash
-ng e2e
+npm install
+npm start
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+The demo is available at `http://localhost:4200`.
 
-## Additional Resources
+## Validation
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+npm run format:check
+npm test
+npm run build
+```
+
+## Build the library
+
+```bash
+npm run build:library
+```
+
+The package is generated in `dist/configurable-data-table`.
+
+## Roadmap
+
+- Expandable rows
+- Column visibility controls
+- Multi-column sorting
+- Virtual scrolling
+- Persisted table preferences
+
+## License
+
+MIT

@@ -3,6 +3,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "configurable-data-table": ["./dist/configurable-data-table"]
+    },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
@@ -17,7 +21,8 @@
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
   },
   "files": [],
   "references": [
@@ -26,6 +31,12 @@
     },
     {
       "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/configurable-data-table/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/configurable-data-table/tsconfig.spec.json"
     }
   ]
 }
